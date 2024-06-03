@@ -27,7 +27,7 @@ class ItemState extends Equatable {
 }
 
 final class GetListItemSuccess extends ItemState {
-  final Query<ItemModel> listItem;
+  final Query<Map<String, dynamic>> listItem;
 
   const GetListItemSuccess(this.listItem) : super.failure();
 }

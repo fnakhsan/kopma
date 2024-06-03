@@ -37,7 +37,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
 
     on<GetListItems>((event, emit) {
       try {
-        Query<ItemModel> listItem = itemRepository.getListItem(event.query);
+        Query<Map<String, dynamic>> listItem = itemRepository.getListItem(event.query);
         emit(GetListItemSuccess(listItem));
       } catch (e) {
         log(e.toString());

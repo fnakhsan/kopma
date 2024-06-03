@@ -59,7 +59,7 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Query<ItemModel> getListItem(String? query) {
+  Query<Map<String, dynamic>> getListItem(String? query) {
     try {
       return _firebaseItemDataSource.getListItem(query);
     } catch (e) {

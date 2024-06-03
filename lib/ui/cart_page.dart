@@ -17,5 +17,4 @@ class _CartPageState extends State<CartPage> {
       appBar: AppBar(title: const Text("Cart"),),
     );
   }
-
 }

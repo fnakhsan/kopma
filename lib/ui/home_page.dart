@@ -3,7 +3,7 @@ import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kopma/bloc/item_bloc/item_bloc.dart';
-import 'package:kopma/ui/cart_page.dart';
+import 'package:kopma/data/model/item/item_entity.dart';
 import 'package:kopma/ui/detail_item_page.dart';
 import 'package:kopma/ui/post_item_page.dart';
 import '../data/model/item/item_model.dart';
@@ -44,15 +44,35 @@ class _HomePageState extends State<HomePage> {
         },
         child: BlocBuilder<ItemBloc, ItemState>(builder: (context, state) {
           if (state is GetListItemSuccess) {
-            return FirestoreListView<ItemModel>(
+            return FirestoreQueryBuilder<Map<String, dynamic>>(
               query: state.listItem,
-              pageSize: 10,
-              emptyBuilder: (context) => const Text('No data'),
-              errorBuilder: (context, error, stackTrace) =>
-                  Text(error.toString()),
-              loadingBuilder: (context) => const CircularProgressIndicator(),
-              itemBuilder: (context, doc) {
-                return ItemWidget(item: doc.data());
+              builder: (context, snapshot, _) {
+                if (snapshot.isFetching) {
+                  return const CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text('Something went wrong! ${snapshot.error}');
+                }
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.6
+                  ),
+                  itemCount: snapshot.docs.length,
+                  itemBuilder: (context, index) {
+                    // if we reached the end of the currently obtained items, we try to
+                    // obtain more items
+                    if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
+                      // Tell FirestoreQueryBuilder to try to obtain more items.
+                      // It is safe to call this function from within the build method.
+                      snapshot.fetchMore();
+                    }
+
+                    final item = snapshot.docs[index].data();
+
+                    return ItemWidget(item: ItemModel.fromEntity(ItemEntity.fromDocument(item)));
+                  },
+                );
               },
             );
           } else {
@@ -89,18 +109,23 @@ class ItemWidget extends StatelessWidget {
               children: [
                 CachedNetworkImage(
                   imageUrl: item.image,
+                  height: 180,
                 ),
                 const Padding(padding: EdgeInsets.all(4)),
                 Text(
                   item.name,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      fontSize: 20.0, fontWeight: FontWeight.w600),
+                      fontSize: 16.0, fontWeight: FontWeight.w600),
                 ),
                 const Padding(padding: EdgeInsets.all(4)),
                 Text(
                   "Rp. ${item.price}",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      fontSize: 16.0, fontWeight: FontWeight.w500),
+                      fontSize: 14.0, fontWeight: FontWeight.w500),
                 ),
               ],
             ),

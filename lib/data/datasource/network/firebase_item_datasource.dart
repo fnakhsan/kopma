@@ -57,15 +57,9 @@ class FirebaseItemDataSource {
     }
   }
 
-  Query<ItemModel> getListItem(String? query) {
+  Query<Map<String, dynamic>> getListItem(String? query) {
     try {
-      return itemsCollection.orderBy('name').withConverter(
-          fromFirestore: (snapshot, options) =>
-              ItemModel.fromEntity(ItemEntity.fromDocument(snapshot.data()!)),
-          toFirestore: (value, options) => value
-              .toEntity(value.id!, value.sellerId!, value.sellerName!,
-                  value.sellerEmail!, value.sellerAddress!, value.sellerImage)
-              .toDocument());
+      return itemsCollection.orderBy('name');
     } catch (e) {
       log(e.toString());
       rethrow;

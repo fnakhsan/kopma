@@ -42,6 +42,13 @@ class _ProfilePageState extends State<ProfilePage> {
             return ProfileScreen(
               providers: const [],
               actions: [
+                DisplayNameChangedAction((context, oldName, newName) {
+                  setState(() {
+                    context.read<UserBloc>().add(SetUserData(
+                        user: user.copyWith(
+                            name: newName)));
+                  });
+                }),
                 SignedOutAction((context) {
                   Navigator.pushReplacementNamed(context, '/sign-in');
                 }),

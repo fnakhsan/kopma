@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kopma/data/model/item/item_model.dart';
 
 abstract class ItemRepository {
-  Query<ItemModel> getListItem(String? query);
+  Query<Map<String, dynamic>> getListItem(String? query);
 
   Future<ItemModel>getDetailItem(String id);
 
